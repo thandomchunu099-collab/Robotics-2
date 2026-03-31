@@ -1,22 +1,22 @@
-# Robotics-2#include <Servo.h>
+#include <Servo.h>
 
-// Pin definitions 
-int trigPin = 9;
-int echoPin = 10;
+// ---------------- PIN DEFINITIONS ----------------
+const int trigPin = 9;
+const int echoPin = 10;
 
-int redLED = 2; 
-int yellowLED = 3;
-int greenLED = 4;
+const int redLED = 2;
+const int yellowLED = 3;
+const int greenLED = 4;
 
-int servoPin = 6;
+const int servoPin = 6;
 
+// ---------------- VARIABLES ----------------
 Servo gateServo;
 
 long duration;
 int distance;
 
-// Threshold distance (cm)
-int threshold = 15;
+const int threshold = 15; // cm
 
 // ---------------- SETUP ----------------
 void setup() {
@@ -38,6 +38,7 @@ void setup() {
 // ---------------- LOOP ----------------
 void loop() {
   distance = getDistance();
+
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
@@ -56,44 +57,46 @@ int getDistance() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
 
-  duration = pulseIn(echoPin, HIGH);
+  duration = pulseIn(echoPin, HIGH, 30000); // timeout
 
-  int dist = duration * 0.034 / 2;
+  if (duration == 0) {
+    return 999; // No object detected
+  }
 
-  return dist;
+  return duration * 0.034 / 2;
 }
 
 // ---------------- FUNCTION: CONTROL SYSTEM ----------------
 void controlSystem(int dist) {
 
   if (dist > 0 && dist < threshold) {
-    // Object close → OPEN gate
+    // OPEN gate
     gateServo.write(90);
 
     digitalWrite(greenLED, HIGH);
     digitalWrite(yellowLED, LOW);
     digitalWrite(redLED, LOW);
 
-    Serial.println("Gate OPEN - GREEN light");
+    Serial.println("OPEN - GREEN");
 
   } else if (dist >= threshold && dist < threshold + 10) {
-    // Warning zone
+    // WARNING
     gateServo.write(0);
 
     digitalWrite(greenLED, LOW);
     digitalWrite(yellowLED, HIGH);
     digitalWrite(redLED, LOW);
 
-    Serial.println("WAIT - YELLOW light");
+    Serial.println("WAIT - YELLOW");
 
   } else {
-    // No object → CLOSED gate
+    // CLOSED
     gateServo.write(0);
 
     digitalWrite(greenLED, LOW);
     digitalWrite(yellowLED, LOW);
     digitalWrite(redLED, HIGH);
 
-    Serial.println("STOP - RED light");
+    Serial.println("STOP - RED");
   }
 }
