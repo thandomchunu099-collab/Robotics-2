@@ -4,7 +4,7 @@
 int trigPin = 9;
 int echoPin = 10;
 
-int redLED = 2;
+int redLED = 2; 
 int yellowLED = 3;
 int greenLED = 4;
 
