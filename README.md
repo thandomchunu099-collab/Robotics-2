@@ -1,6 +1,6 @@
 # Robotics-2#include <Servo.h>
 
-// Pin definitions
+// Pin definitions 
 int trigPin = 9;
 int echoPin = 10;
 
